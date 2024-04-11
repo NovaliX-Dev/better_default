@@ -17,3 +17,28 @@ pub fn find_attribute_unique<'a>(
 
     Some((first, vec))
 }
+
+// the imports are here because i'm not sure where to place that function
+use syn::spanned::Spanned;
+use crate::TokenStream2;
+
+pub fn find_default_attributes_and_handle_duplicates<'l>(
+    attrs: &'l [Attribute],
+    error_tokens: &mut Vec<TokenStream2>,
+) -> Option<&'l syn::Attribute> {
+
+    let (attr, duplicates) = match find_attribute_unique(attrs, crate::DEFAULT_IDENT) {
+        Some(tuple) => tuple,
+        None => return None,
+    };
+
+    for duplicate in duplicates {
+        error!(
+            error_tokens,
+            duplicate.meta.span(),
+            "this attribute is already declared."
+        );
+    }
+
+    Some(attr)
+}
