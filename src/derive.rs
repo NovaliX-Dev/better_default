@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{hash_map, HashMap};
 
 use quote::quote;
 use syn::{
@@ -47,15 +47,15 @@ fn parse_top_attribute(
             continue;
         }
 
-        if hash_map.contains_key(&ident_str) {
+        if let hash_map::Entry::Vacant(e) = hash_map.entry(ident_str) {
+            e.insert(field.value);
+        } else {
             error!(
                 error_tokens,
                 field.ident.span(),
                 "this field is already declared."
             );
             continue;
-        } else {
-            hash_map.insert(ident_str, field.value);
         }
     }
 
