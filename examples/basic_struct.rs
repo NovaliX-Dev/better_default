@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use better_default::BetterDefault;
 
 #[derive(BetterDefault)]

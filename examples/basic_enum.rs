@@ -1,4 +1,4 @@
-use std::default;
+#![allow(dead_code)]
 
 use better_default::BetterDefault;
 
