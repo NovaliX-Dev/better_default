@@ -4,12 +4,10 @@ use better_default::BetterDefault;
 
 #[derive(BetterDefault, PartialEq, Debug)]
 enum Enum1 {
-    Variant1 {
-
-    },
+    Variant1 {},
 
     #[default]
-    Variant2
+    Variant2,
 }
 
 #[test]
@@ -22,16 +20,19 @@ enum Enum2 {
     #[default(field1: 1.0, field2: "aaaa".to_string())]
     Variant1 {
         field1: f32,
-        field2: String
+        field2: String,
     },
 
-    Variant2
+    Variant2,
 }
 
 #[test]
 fn test_named_variant_top_attribute() {
     let default = Enum2::default();
-    let expected = Enum2::Variant1 { field1: 1.0, field2: "aaaa".to_string() };
+    let expected = Enum2::Variant1 {
+        field1: 1.0,
+        field2: "aaaa".to_string(),
+    };
 
     assert_eq!(default, expected);
 }
@@ -44,16 +45,19 @@ enum Enum3 {
         field1: f32,
 
         #[default("aaaa".to_string())]
-        field2: String
+        field2: String,
     },
 
-    Variant2
+    Variant2,
 }
 
 #[test]
 fn test_named_variant_inner_attributes() {
     let default = Enum3::default();
-    let expected = Enum3::Variant1 { field1: 1.0, field2: "aaaa".to_string() };
+    let expected = Enum3::Variant1 {
+        field1: 1.0,
+        field2: "aaaa".to_string(),
+    };
 
     assert_eq!(default, expected);
 }
@@ -61,9 +65,9 @@ fn test_named_variant_inner_attributes() {
 #[derive(BetterDefault, PartialEq, Debug)]
 enum Enum4 {
     #[default(0: 1.0, 1: "aaaa".to_string())]
-    Variant1 (f32, String),
+    Variant1(f32, String),
 
-    Variant2
+    Variant2,
 }
 
 #[test]
@@ -77,15 +81,9 @@ fn test_unnamed_variant_top_attribute() {
 #[derive(BetterDefault, PartialEq, Debug)]
 enum Enum5 {
     #[default]
-    Variant1 (
-        #[default(1.0)]
-        f32,
+    Variant1(#[default(1.0)] f32, #[default("aaaa".to_string())] String),
 
-        #[default("aaaa".to_string())]
-        String
-    ),
-
-    Variant2
+    Variant2,
 }
 
 #[test]

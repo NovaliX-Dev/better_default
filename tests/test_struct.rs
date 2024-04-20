@@ -20,7 +20,7 @@ struct Struct<'l> {
     #[default(F4_DEFAULT)]
     f4: [u32; 4],
 
-    f5: Vec<(f32, char)>
+    f5: Vec<(f32, char)>,
 }
 
 #[test]
@@ -45,7 +45,7 @@ struct Struct2<'l> {
 
     f4: [u32; 4],
 
-    f5: Vec<(f32, char)>
+    f5: Vec<(f32, char)>,
 }
 
 #[test]
@@ -60,20 +60,12 @@ fn test_named_fields_top_field_attrs() {
 }
 
 #[derive(BetterDefault)]
-struct Struct3<'l> (
-    #[default(1)]
-    u32,
-
-    #[default("aaa".to_string())]
-    String,
-
-    #[default(f3_default())]
-    &'l str,
-
-    #[default(F4_DEFAULT)]
-    [u32; 4],
-
-    Vec<(f32, char)>
+struct Struct3<'l>(
+    #[default(1)] u32,
+    #[default("aaa".to_string())] String,
+    #[default(f3_default())] &'l str,
+    #[default(F4_DEFAULT)] [u32; 4],
+    Vec<(f32, char)>,
 );
 
 #[test]
@@ -89,17 +81,7 @@ fn test_unnamed_fields_per_fields_attrs() {
 
 #[derive(BetterDefault)]
 #[default(0: 1, 1: "aaa".to_string(), 2: f3_default(), 3: F4_DEFAULT)]
-struct Struct4<'l> (
-    u32,
-
-    String,
-
-    &'l str,
-
-    [u32; 4],
-
-    Vec<(f32, char)>
-);
+struct Struct4<'l>(u32, String, &'l str, [u32; 4], Vec<(f32, char)>);
 
 #[test]
 fn test_unnamed_fields_top_field_attrs() {

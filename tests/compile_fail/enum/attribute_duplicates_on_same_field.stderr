@@ -1,0 +1,5 @@
+error: this attribute is already declared.
+ --> tests/compile_fail/enum/attribute_duplicates_on_same_field.rs:8:7
+  |
+8 |     #[default]
+  |       ^^^^^^^
