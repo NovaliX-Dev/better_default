@@ -11,20 +11,25 @@ use crate::{attrs, field_assign::FieldAssign, fields, Span2, TokenStream2};
 fn parse_top_attribute(
     attr: &Attribute,
     field_names: &[String],
+    require_list: bool,
     error_tokens: &mut Vec<TokenStream2>,
 ) -> Option<HashMap<String, Expr>> {
-    let list = match &attr.meta {
-        syn::Meta::Path(_) => return None,
-        syn::Meta::List(list) => list,
-        syn::Meta::NameValue(nv) => {
-            let ident = attr.path().get_ident().unwrap();
-            error!(
-                error_tokens,
-                nv.span(),
-                "expected attribute arguments in parentheses (`{ident}(...)`) or single `{ident}`"
-            );
-
-            return None;
+    let list = if require_list {
+        handle_error!(attr.meta.require_list(), error_tokens)?
+    } else {
+        match &attr.meta {
+            syn::Meta::Path(_) => return None,
+            syn::Meta::List(list) => list,
+            syn::Meta::NameValue(nv) => {
+                let ident = attr.path().get_ident().unwrap();
+                error!(
+                    error_tokens,
+                    nv.span(),
+                    "expected attribute arguments in parentheses (`{ident}(...)`) or single `{ident}`"
+                );
+    
+                return None;
+            }
         }
     };
 
@@ -77,7 +82,8 @@ fn get_fields_name(fields: &Fields) -> Vec<String> {
 
 fn derive_struct(top_attribute: Option<&Attribute>, data: &DataStruct, error_tokens: &mut Vec<TokenStream2>) -> TokenStream2 {
     let field_names = get_fields_name(&data.fields);
-    let top_attribute = top_attribute.and_then(|attr| parse_top_attribute(attr, &field_names, error_tokens));
+    let top_attribute = top_attribute.and_then(|attr| parse_top_attribute(attr, &field_names, true, error_tokens));
+
     let body_tokens = fields::derive_fields(top_attribute.as_ref(), &data.fields, error_tokens);
 
     quote! { Self #body_tokens }
@@ -114,7 +120,7 @@ fn default_enum(top_attribute: Option<&Attribute>, data: &DataEnum, error_tokens
         let field_names = get_fields_name(&variant.fields);
         let top_attribute =
             attrs::find_default_attributes_and_handle_duplicates(&variant.attrs, error_tokens)
-                .and_then(|attr| parse_top_attribute(attr, &field_names, error_tokens));
+                .and_then(|attr| parse_top_attribute(attr, &field_names, false, error_tokens));
 
         let headless_default_tokens =
             fields::derive_fields(top_attribute.as_ref(), &variant.fields, error_tokens);
