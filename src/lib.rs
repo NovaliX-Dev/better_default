@@ -2,7 +2,7 @@ use proc_macro::TokenStream;
 use proc_macro2::{Span as Span2, TokenStream as TokenStream2};
 use syn::DeriveInput;
 
-// the macros a here so that the other files can have access to them 
+// the macros a here so that the other files can have access to them
 // (i know that's kinda weird)
 macro_rules! error {
     ($span: expr, $message: literal $(,$format_args: expr)*) => {
@@ -31,10 +31,10 @@ macro_rules! handle_error {
 }
 
 mod attrs;
+mod default;
 mod derive;
 mod field_assign;
 mod traits;
-mod fields;
 
 const DEFAULT_IDENT: &str = "default";
 

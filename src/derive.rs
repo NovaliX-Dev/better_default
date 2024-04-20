@@ -1,4 +1,4 @@
-use std::collections::{hash_map, HashMap};
+use std::collections::HashMap;
 
 use quote::quote;
 use syn::{
@@ -6,7 +6,11 @@ use syn::{
     Fields, Token,
 };
 
-use crate::{attrs, field_assign::FieldAssign, fields, Span2, TokenStream2};
+use crate::{
+    attrs, default,
+    field_assign::{self, FieldAssign},
+    Span2, TokenStream2,
+};
 
 fn parse_top_attribute(
     attr: &Attribute,
@@ -27,7 +31,7 @@ fn parse_top_attribute(
                     nv.span(),
                     "expected attribute arguments in parentheses (`{ident}(...)`) or single `{ident}`"
                 );
-    
+
                 return None;
             }
         }
@@ -37,34 +41,8 @@ fn parse_top_attribute(
         list.parse_args_with(Punctuated::parse_terminated),
         error_tokens
     )?;
-    
-    let mut hash_map = HashMap::with_capacity(punctuated.len());
-    for field in punctuated {
-        let ident_str = field.ident.to_string();
 
-        if !field_names.contains(&ident_str) {
-            error!(
-                error_tokens,
-                field.ident.span(),
-                "unknown field `{}`",
-                ident_str
-            );
-            continue;
-        }
-
-        if let hash_map::Entry::Vacant(e) = hash_map.entry(ident_str) {
-            e.insert(field.value);
-        } else {
-            error!(
-                error_tokens,
-                field.ident.span(),
-                "this field is already declared."
-            );
-            continue;
-        }
-    }
-
-    hash_map.shrink_to_fit();
+    let hash_map = field_assign::parse_punctuated_unique(punctuated, field_names, error_tokens);
     Some(hash_map)
 }
 
@@ -80,16 +58,25 @@ fn get_fields_name(fields: &Fields) -> Vec<String> {
     }
 }
 
-fn derive_struct(top_attribute: Option<&Attribute>, data: &DataStruct, error_tokens: &mut Vec<TokenStream2>) -> TokenStream2 {
+fn derive_struct(
+    top_attribute: Option<&Attribute>,
+    data: &DataStruct,
+    error_tokens: &mut Vec<TokenStream2>,
+) -> TokenStream2 {
     let field_names = get_fields_name(&data.fields);
-    let top_attribute = top_attribute.and_then(|attr| parse_top_attribute(attr, &field_names, true, error_tokens));
+    let top_attribute =
+        top_attribute.and_then(|attr| parse_top_attribute(attr, &field_names, true, error_tokens));
 
-    let body_tokens = fields::derive_fields(top_attribute.as_ref(), &data.fields, error_tokens);
+    let body_tokens = default::derive_body(top_attribute.as_ref(), &data.fields, error_tokens);
 
     quote! { Self #body_tokens }
 }
 
-fn default_enum(top_attribute: Option<&Attribute>, data: &DataEnum, error_tokens: &mut Vec<TokenStream2>) -> TokenStream2 {
+fn default_enum(
+    top_attribute: Option<&Attribute>,
+    data: &DataEnum,
+    error_tokens: &mut Vec<TokenStream2>,
+) -> TokenStream2 {
     if let Some(attr) = top_attribute {
         error!(
             error_tokens,
@@ -100,8 +87,11 @@ fn default_enum(top_attribute: Option<&Attribute>, data: &DataEnum, error_tokens
 
     let mut default_variant = None;
     for variant in &data.variants {
-        let attr = match attrs::find_default_attributes_and_handle_duplicates(&variant.attrs, error_tokens)
-        {
+        let attr = match attrs::find_attribute_and_handle_duplicates(
+            &variant.attrs,
+            crate::DEFAULT_IDENT,
+            error_tokens,
+        ) {
             Some(value) => value,
             None => continue,
         };
@@ -118,12 +108,10 @@ fn default_enum(top_attribute: Option<&Attribute>, data: &DataEnum, error_tokens
         }
 
         let field_names = get_fields_name(&variant.fields);
-        let top_attribute =
-            attrs::find_default_attributes_and_handle_duplicates(&variant.attrs, error_tokens)
-                .and_then(|attr| parse_top_attribute(attr, &field_names, false, error_tokens));
+        let top_attribute = parse_top_attribute(attr, &field_names, false, error_tokens);
 
         let headless_default_tokens =
-            fields::derive_fields(top_attribute.as_ref(), &variant.fields, error_tokens);
+            default::derive_body(top_attribute.as_ref(), &variant.fields, error_tokens);
         let ident = &variant.ident;
         let default_tokens = quote! { Self::#ident #headless_default_tokens };
 
@@ -148,8 +136,11 @@ fn default_enum(top_attribute: Option<&Attribute>, data: &DataEnum, error_tokens
 pub fn derive(input: DeriveInput) -> TokenStream2 {
     let mut error_tokens = Vec::new();
 
-    let top_attribute =
-        attrs::find_default_attributes_and_handle_duplicates(&input.attrs, &mut error_tokens);
+    let top_attribute = attrs::find_attribute_and_handle_duplicates(
+        &input.attrs,
+        crate::DEFAULT_IDENT,
+        &mut error_tokens,
+    );
 
     let tokens = match &input.data {
         syn::Data::Struct(data) => derive_struct(top_attribute, data, &mut error_tokens),

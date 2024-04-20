@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
-use syn::{spanned::Spanned, Expr, Fields, Ident, Token};
 use quote::{quote, ToTokens};
+use syn::{spanned::Spanned, Expr, Fields, Ident, Token};
 
 use crate::{attrs, traits::JoinTokens, Span2, TokenStream2};
 
@@ -36,16 +36,24 @@ fn get_field_default_values(
 
         let ty = &field.ty;
 
-        let default_tokens =
-            attrs::find_default_attributes_and_handle_duplicates(&field.attrs, error_tokens)
-                .and_then(|attr| handle_error!(attr.meta.require_list(), error_tokens));
-    
-        let top_default_tokens = top_default_values.and_then(|h| h.get(&ident_str))
+        let default_tokens = attrs::find_attribute_and_handle_duplicates(
+            &field.attrs,
+            crate::DEFAULT_IDENT,
+            error_tokens,
+        )
+        .and_then(|attr| handle_error!(attr.meta.require_list(), error_tokens));
+
+        let top_default_tokens = top_default_values
+            .and_then(|h| h.get(&ident_str))
             .map(|expr| expr.to_token_stream());
-    
+
         if let Some(meta_list) = default_tokens {
             if top_default_tokens.is_some() {
-                error!(error_tokens, meta_list.span(), "a default value for this field already exists in the top default attribute.");
+                error!(
+                    error_tokens,
+                    meta_list.span(),
+                    "a default value for this field already exists in the top default attribute."
+                );
             }
         }
 
@@ -64,7 +72,7 @@ fn get_field_default_values(
     default_values_vec
 }
 
-pub(crate) fn derive_fields(
+pub(crate) fn derive_body(
     top_default_values: Option<&HashMap<String, Expr>>,
     fields: &Fields,
     error_tokens: &mut Vec<TokenStream2>,

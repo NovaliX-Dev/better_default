@@ -1,6 +1,8 @@
-use syn::{parse::Parse, Expr, Ident, LitInt, Token};
+use std::collections::{hash_map, HashMap};
 
-use crate::Span2;
+use syn::{parse::Parse, punctuated::Punctuated, Expr, Ident, LitInt, Token};
+
+use crate::{Span2, TokenStream2};
 
 pub(crate) enum FieldName {
     Ident(Ident),
@@ -50,4 +52,39 @@ impl Parse for FieldAssign {
             value: input.parse()?,
         })
     }
+}
+
+pub(crate) fn parse_punctuated_unique(
+    punctuated: Punctuated<FieldAssign, syn::token::Comma>,
+    field_names: &[String],
+    error_tokens: &mut Vec<TokenStream2>,
+) -> HashMap<String, Expr> {
+    let mut hash_map = HashMap::with_capacity(punctuated.len());
+    for field in punctuated {
+        let ident_str = field.ident.to_string();
+
+        if !field_names.contains(&ident_str) {
+            error!(
+                error_tokens,
+                field.ident.span(),
+                "unknown field `{}`",
+                ident_str
+            );
+            continue;
+        }
+
+        if let hash_map::Entry::Vacant(e) = hash_map.entry(ident_str) {
+            e.insert(field.value);
+        } else {
+            error!(
+                error_tokens,
+                field.ident.span(),
+                "this field is already declared."
+            );
+            continue;
+        }
+    }
+
+    hash_map.shrink_to_fit();
+    hash_map
 }

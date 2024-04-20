@@ -19,15 +19,15 @@ pub fn find_attribute_unique<'a>(
 }
 
 // the imports are here because i'm not sure where to place that function
-use syn::spanned::Spanned;
 use crate::TokenStream2;
+use syn::spanned::Spanned;
 
-pub fn find_default_attributes_and_handle_duplicates<'l>(
+pub fn find_attribute_and_handle_duplicates<'l>(
     attrs: &'l [Attribute],
+    ident: &str,
     error_tokens: &mut Vec<TokenStream2>,
 ) -> Option<&'l syn::Attribute> {
-
-    let (attr, duplicates) = match find_attribute_unique(attrs, crate::DEFAULT_IDENT) {
+    let (attr, duplicates) = match find_attribute_unique(attrs, ident) {
         Some(tuple) => tuple,
         None => return None,
     };
