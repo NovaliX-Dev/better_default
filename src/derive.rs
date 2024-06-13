@@ -12,6 +12,25 @@ use crate::{
     Span2, TokenStream2,
 };
 
+fn search_and_mark_attribute_on_default_fields(variant: &syn::Variant, error_tokens: &mut Vec<TokenStream2>) {
+    for field in &variant.fields {
+        match attrs::find_attribute_and_handle_duplicates(
+            &field.attrs,
+            crate::DEFAULT_IDENT,
+            error_tokens,
+        ) {
+            Some(attribute) => {
+                error!(
+                    error_tokens,
+                    attribute.meta.span(),
+                    "You can use the default attribute on variant fields if the variant is not declared as default."
+                );
+            },
+            None => {}
+        }
+    }
+}
+
 fn parse_top_attribute(
     attr: &Attribute,
     field_names: &[String],
@@ -93,7 +112,11 @@ fn default_enum(
             error_tokens,
         ) {
             Some(value) => value,
-            None => continue,
+            None => {
+                search_and_mark_attribute_on_default_fields(variant, error_tokens);
+
+                continue;
+            },
         };
 
         if let Some((ident, _)) = default_variant.as_ref() {
@@ -113,6 +136,8 @@ fn default_enum(
         let headless_default_tokens =
             default::derive_body(top_attribute.as_ref(), &variant.fields, error_tokens);
         let ident = &variant.ident;
+        // FIXME: for some reason the "value holding a reference to a value owned by the current function"
+        // error has the Span::call_site() span, and idk why.
         let default_tokens = quote! { Self::#ident #headless_default_tokens };
 
         let ident = variant.ident.to_owned();
