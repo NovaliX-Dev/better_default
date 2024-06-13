@@ -41,7 +41,7 @@ fn get_field_default_values(
             crate::DEFAULT_IDENT,
             error_tokens,
         )
-        .and_then(|attr| handle_error!(attr.meta.require_list(), error_tokens));
+            .and_then(|attr| handle_error!(attr.meta.require_list(), error_tokens));
 
         let top_default_tokens = top_default_values
             .and_then(|h| h.get(&ident_str))
