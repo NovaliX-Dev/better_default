@@ -184,7 +184,7 @@ pub fn derive(input: DeriveInput) -> TokenStream2 {
     let error_tokens: TokenStream2 = error_tokens.into_iter().collect();
 
     quote! {
-        impl #impl_generics Default for #ident #type_generics #where_clause {
+        impl #impl_generics std::default::Default for #ident #type_generics #where_clause {
             fn default() -> Self {
                 #tokens
             }
