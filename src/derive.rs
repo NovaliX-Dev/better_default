@@ -12,7 +12,7 @@ use crate::{
     Span2, TokenStream2,
 };
 
-fn search_and_mark_attribute_on_default_fields(variant: &syn::Variant, error_tokens: &mut Vec<TokenStream2>) {
+fn search_and_mark_attribute_on_variant_fields(variant: &syn::Variant, error_tokens: &mut Vec<TokenStream2>) {
     for field in &variant.fields {
         match attrs::find_attribute_and_handle_duplicates(
             &field.attrs,
@@ -113,7 +113,7 @@ fn default_enum(
         ) {
             Some(value) => value,
             None => {
-                search_and_mark_attribute_on_default_fields(variant, error_tokens);
+                search_and_mark_attribute_on_variant_fields(variant, error_tokens);
 
                 continue;
             },
