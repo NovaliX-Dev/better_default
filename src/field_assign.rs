@@ -1,4 +1,7 @@
-use std::collections::{hash_map, HashMap};
+use std::{
+    collections::{hash_map, HashMap},
+    fmt::Display,
+};
 
 use syn::{parse::Parse, punctuated::Punctuated, Expr, Ident, LitInt, Token};
 
@@ -18,12 +21,13 @@ impl FieldName {
     }
 }
 
-impl ToString for FieldName {
-    fn to_string(&self) -> String {
-        match self {
+impl Display for FieldName {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str = match self {
             FieldName::Ident(ident) => ident.to_string(),
             FieldName::IntLiteral(int_literal) => int_literal.to_string(),
-        }
+        };
+        f.write_str(str.as_str())
     }
 }
 

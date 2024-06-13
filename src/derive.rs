@@ -12,21 +12,21 @@ use crate::{
     Span2, TokenStream2,
 };
 
-fn search_and_mark_attribute_on_variant_fields(variant: &syn::Variant, error_tokens: &mut Vec<TokenStream2>) {
+fn search_and_mark_attribute_on_variant_fields(
+    variant: &syn::Variant,
+    error_tokens: &mut Vec<TokenStream2>,
+) {
     for field in &variant.fields {
-        match attrs::find_attribute_and_handle_duplicates(
+        if let Some(attribute) = attrs::find_attribute_and_handle_duplicates(
             &field.attrs,
             crate::DEFAULT_IDENT,
             error_tokens,
         ) {
-            Some(attribute) => {
-                error!(
-                    error_tokens,
-                    attribute.meta.span(),
-                    "You can't use the default attribute on variant fields if the variant is not declared as default."
-                );
-            },
-            None => {}
+            error!(
+                error_tokens,
+                attribute.meta.span(),
+                "You can't use the default attribute on variant fields if the variant is not declared as default."
+            );
         }
     }
 }
@@ -116,7 +116,7 @@ fn default_enum(
                 search_and_mark_attribute_on_variant_fields(variant, error_tokens);
 
                 continue;
-            },
+            }
         };
 
         if let Some((ident, _)) = default_variant.as_ref() {
