@@ -1,5 +1,5 @@
 error[E0277]: the trait bound `T: Default` is not satisfied
- --> tests/compile_fail/enum/generics_missing_default.rs:8:13
+ --> tests/compile_fail/generics_missing_default.rs:8:13
   |
 8 |     Variant(T)
   |             ^ the trait `Default` is not implemented for `T`
@@ -10,7 +10,7 @@ help: consider restricting type parameter `T`
   |            +++++++++++++++++++++++
 
 error[E0277]: the trait bound `T: Default` is not satisfied
-  --> tests/compile_fail/enum/generics_missing_default.rs:15:16
+  --> tests/compile_fail/generics_missing_default.rs:15:16
    |
 15 |         field: T
    |                ^ the trait `Default` is not implemented for `T`
@@ -19,3 +19,14 @@ help: consider restricting type parameter `T`
    |
 12 | enum Enum2<T: std::default::Default> {
    |             +++++++++++++++++++++++
+
+error[E0277]: the trait bound `T: Default` is not satisfied
+  --> tests/compile_fail/generics_missing_default.rs:21:12
+   |
+21 |     field: T
+   |            ^ the trait `Default` is not implemented for `T`
+   |
+help: consider restricting type parameter `T`
+   |
+20 | struct Struct<T: std::default::Default> {
+   |                +++++++++++++++++++++++

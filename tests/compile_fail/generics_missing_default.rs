@@ -16,4 +16,9 @@ enum Enum2<T> {
     }
 }
 
+#[derive(BetterDefault)]
+struct Struct<T> {
+    field: T
+}
+
 fn main() {}

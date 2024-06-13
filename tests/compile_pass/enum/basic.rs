@@ -2,7 +2,7 @@
 
 use better_default::BetterDefault;
 
-#[derive(BetterDefault)]
+#[derive(BetterDefault, Eq, PartialEq, Debug)]
 enum Enum2 {
     #[default]
     Variant {
@@ -15,4 +15,6 @@ enum Enum2 {
     Variant3,
 }
 
-fn main() {}
+fn main() {
+    assert_eq!(Enum2::Variant { first: 0, second: String::new() }, Enum2::default())
+}

@@ -16,4 +16,11 @@ enum Enum2 {
     Variant3,
 }
 
+#[derive(BetterDefault)]
+struct Struct {
+    #[default(0)]
+    #[default(1)]
+    field: u32
+}
+
 fn main() {}
