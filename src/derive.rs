@@ -23,7 +23,7 @@ fn search_and_mark_attribute_on_variant_fields(variant: &syn::Variant, error_tok
                 error!(
                     error_tokens,
                     attribute.meta.span(),
-                    "You can use the default attribute on variant fields if the variant is not declared as default."
+                    "You can't use the default attribute on variant fields if the variant is not declared as default."
                 );
             },
             None => {}
