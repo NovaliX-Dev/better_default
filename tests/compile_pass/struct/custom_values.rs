@@ -1,6 +1,6 @@
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug, Eq, PartialEq)]
+#[derive(Default, Debug, Eq, PartialEq)]
 struct Struct {
     #[default(1)]
     field: u32,

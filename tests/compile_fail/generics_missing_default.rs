@@ -1,14 +1,14 @@
 #![allow(dead_code)]
 
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault)]
+#[derive(Default)]
 enum Enum<T> {
     #[default]
     Variant(T)
 }
 
-#[derive(BetterDefault)]
+#[derive(Default)]
 enum Enum2<T> {
     #[default]
     Variant {
@@ -16,7 +16,7 @@ enum Enum2<T> {
     }
 }
 
-#[derive(BetterDefault)]
+#[derive(Default)]
 struct Struct<T> {
     field: T
 }

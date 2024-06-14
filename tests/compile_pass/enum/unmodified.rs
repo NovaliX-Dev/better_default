@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Eq, PartialEq, Debug)]
+#[derive(Default, Eq, PartialEq, Debug)]
 enum Enum2 {
     #[default]
     Variant {

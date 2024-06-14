@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, PartialEq, Debug)]
+#[derive(Default, PartialEq, Debug)]
 enum Enum1 {
     Variant1 {},
 
@@ -15,7 +15,7 @@ fn test_unit_variant() {
     assert_eq!(Enum1::default(), Enum1::Variant2)
 }
 
-#[derive(BetterDefault, PartialEq, Debug)]
+#[derive(Default, PartialEq, Debug)]
 enum Enum2 {
     #[default(field1: 1.0, field2: "aaaa".to_string())]
     Variant1 {
@@ -37,7 +37,7 @@ fn test_named_variant_top_attribute() {
     assert_eq!(default, expected);
 }
 
-#[derive(BetterDefault, PartialEq, Debug)]
+#[derive(Default, PartialEq, Debug)]
 enum Enum3 {
     #[default]
     Variant1 {
@@ -62,7 +62,7 @@ fn test_named_variant_inner_attributes() {
     assert_eq!(default, expected);
 }
 
-#[derive(BetterDefault, PartialEq, Debug)]
+#[derive(Default, PartialEq, Debug)]
 enum Enum4 {
     #[default(0: 1.0, 1: "aaaa".to_string())]
     Variant1(f32, String),
@@ -78,7 +78,7 @@ fn test_unnamed_variant_top_attribute() {
     assert_eq!(default, expected);
 }
 
-#[derive(BetterDefault, PartialEq, Debug)]
+#[derive(Default, PartialEq, Debug)]
 enum Enum5 {
     #[default]
     Variant1(#[default(1.0)] f32, #[default("aaaa".to_string())] String),

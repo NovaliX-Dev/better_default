@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug)]
+#[derive(Default, Debug)]
 enum Enum {
     // mark the variant as default, and also specifies the default values :
     //      - the first field keeps it's usual default value.

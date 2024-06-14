@@ -1,6 +1,6 @@
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug, Eq, PartialEq)]
+#[derive(Default, Debug, Eq, PartialEq)]
 enum Enum2 {
     #[default(first: 1)]
     Variant {

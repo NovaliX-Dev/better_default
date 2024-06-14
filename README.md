@@ -1,8 +1,8 @@
-# BetterDefault
+# Better Default
 
 *The std Default derive with more customization available and some upgrades.*
 
-This crate provide a single derive trait called `BetterDefault`. This derive act as the std `Derive`, but allows to modify the default values of each fields. It also allows to mark enum variants with fields as default.
+This crate provide a single derive trait called `Default`. This derive act as the std `Default` derive, but allows to modify the default values of each fields. It also allows to mark enum variants with fields as default.
 
 ## Features
  - Does everything the std `Default` derive trait does
@@ -18,7 +18,9 @@ See all those features in actions in the `Examples` chapter.
 **Before doing anything here**, if you want to override the fields of an enum variant, **you should mark it as default first**
 
 ```rust, ignore
-#[derive(BetterDefault)]
+use better_default::Default;
+
+#[derive(Default)]
 enum Enum {
     #[default]
     Variant {
@@ -46,9 +48,9 @@ You can put anything you want in the `expression` bloc, **as long as it can be c
 
 Here is an example of this approach in action :
 ```rust
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug)]
+#[derive(Default, Debug)]
 enum Enum {
     #[default] // mark the variant as default (this is mandatory)
     Variant1 {
@@ -78,13 +80,13 @@ Instead of placing an attribute on all the fields of a struct / enum variant, yo
 
 The syntax of the top attributes is the following :
 ```rust, ignore
-#[derive(BetterDefault)]
+#[derive(Default)]
 #[default((<field_id>: <expression>),*)]
 struct Struct { ... } // the struct can have unnamed fields
 ```
 
 ```rust, ignore
-#[derive(BetterDefault)]
+#[derive(Default)]
 enum Enum {
     #[default((<field_id>: <expression>),*)]
     Variant { ... } // the variant can have unnamed fields
@@ -97,9 +99,9 @@ Again, you can put anything you want in the `expression` bloc, **as long as it c
 
 Here are two examples, one covering unnamed fields and one covering named ones.
 ```rust
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug)]
+#[derive(Default, Debug)]
 enum Enum {
     // mark the variant as default, and also specifies the default values :
     //      - the default value of the first field (which is at index 0) is set to 1
@@ -121,9 +123,9 @@ fn main() {
 ```
 
 ```rust
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug)]
+#[derive(Default, Debug)]
 #[default(field1: 1, field2: "Hello world!".to_string())]
 struct Struct {
     field1: u32, 
@@ -141,9 +143,9 @@ fn main() {
 ### Mark enum variant with fields as default
 
 ```rust
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug)]
+#[derive(Default, Debug)]
 enum Enum {
     #[default]
     Variant1 {
@@ -157,7 +159,7 @@ enum Enum {
     Variant3,
 }
 
-#[derive(BetterDefault, Debug)]
+#[derive(Default, Debug)]
 enum Enum2 {
     #[default]
     Variant1(u32, String),
@@ -177,9 +179,9 @@ There are two ways of doing this.
 Per field attributes are more suitable for struct / enum variants with named fields.
 
 ```rust
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug)]
+#[derive(Default, Debug)]
 enum Enum {
     #[default] // mark the variant as default (this is mandatory)
     Variant1 {
@@ -204,9 +206,9 @@ fn main() {
 ```
 
 ```rust
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug)]
+#[derive(Default, Debug)]
 // Structs don't need to be mark as default with a top attribute. They're optional.
 struct Struct {
     #[default(10)] // set the default value of field1 to be 10
@@ -226,9 +228,9 @@ fn main() {
 While not recommended, you can also use them on unnamed fields :
 
 ```rust
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug)]
+#[derive(Default, Debug)]
 // Structs don't need to be mark as default with a top attribute. They're optional.
 struct Struct (
     #[default(10)] // set the default value of field1 to be 10
@@ -245,9 +247,9 @@ fn main() {
 ```
 
 ```rust
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug)]
+#[derive(Default, Debug)]
 enum Enum {
     #[default] // mark the variant as default (this is mandatory)
     Variant1 (
@@ -278,9 +280,9 @@ The particularity of the top attribute is that you can define all the default va
 > **Not all the fields need to be represented here, only those you want to modify.**
 
 ```rust
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug)]
+#[derive(Default, Debug)]
 enum Enum {
     // mark the variant as default, and also specifies the default values :
     //      - the first field keeps it's usual default value.
@@ -302,9 +304,9 @@ fn main() {
 ```
 
 ```rust
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug)]
+#[derive(Default, Debug)]
 // here we can use the top default attribute to customize the default values of our fields.
 //      - we change the default value of the first field (represented by the index 0) to 1
 #[default(0: 1, 1: "a".to_string())]
@@ -319,9 +321,9 @@ fn main() {
 This can also be used on named fields :
 
 ```rust
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug)]
+#[derive(Default, Debug)]
 enum Enum {
     // mark the variant as default, and also specifies the default values :
     //      - the first field keeps it's usual default value.
@@ -346,9 +348,9 @@ fn main() {
 ```
 
 ```rust
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug)]
+#[derive(Default, Debug)]
 #[default(field1: 1, field2: "Hello world!".to_string())]
 struct Struct {
     field1: u32, 

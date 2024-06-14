@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault)]
+#[derive(Default)]
 enum Enum {
     #[default(0: 5)]
     Variant(
@@ -16,7 +16,7 @@ enum Enum {
     Variant3,
 }
 
-#[derive(BetterDefault)]
+#[derive(Default)]
 enum Enum2 {
     #[default(field1: 10)]
     Variant{

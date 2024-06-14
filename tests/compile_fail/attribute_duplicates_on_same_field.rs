@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault)]
+#[derive(Default)]
 enum Enum2 {
     #[default]
     #[default]
@@ -16,7 +16,7 @@ enum Enum2 {
     Variant3,
 }
 
-#[derive(BetterDefault)]
+#[derive(Default)]
 struct Struct {
     #[default(0)]
     #[default(1)]

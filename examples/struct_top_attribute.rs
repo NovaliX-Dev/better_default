@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault, Debug)]
+#[derive(Default, Debug)]
 // here we can use the top default attribute to customize the default values of our fields.
 //      - we change the default value of the first field (represented by the index 0) to 1
 #[default(0: 1)]

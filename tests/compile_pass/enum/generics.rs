@@ -1,14 +1,14 @@
 #![allow(dead_code)]
 
-use better_default::BetterDefault;
+use better_default::Default;
 
-#[derive(BetterDefault)]
+#[derive(Default)]
 enum Enum<T: Default> {
     #[default]
     Variant(T)
 }
 
-#[derive(BetterDefault)]
+#[derive(Default)]
 enum Enum2<T: Default> {
     #[default]
     Variant {
