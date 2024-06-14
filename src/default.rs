@@ -41,22 +41,23 @@ fn get_field_default_values(
             crate::DEFAULT_IDENT,
             error_tokens,
         )
-            .and_then(|attr| handle_error!(attr.meta.require_list(), error_tokens))
-            .and_then(|meta_list| handle_error!(meta_list.parse_args::<Expr>(), error_tokens));
+            .and_then(|attr| handle_error!(attr.meta.require_list(), error_tokens));
 
         let top_default_tokens = top_default_values
             .and_then(|h| h.get(&ident_str))
             .map(|expr| expr.to_token_stream());
 
-        if let Some(expr) = &default_tokens {
+        if let Some(meta) = &default_tokens {
             if top_default_tokens.is_some() {
                 error!(
                     error_tokens,
-                    expr.span(),
+                    meta.path.span(),
                     "a default value for this field already exists in the top default attribute."
                 );
             }
         }
+
+        let default_tokens = default_tokens.and_then(|meta| handle_error!(meta.parse_args::<Expr>(), error_tokens));
 
         let default_tokens = default_tokens
             .map(|expr| expr.to_token_stream())
