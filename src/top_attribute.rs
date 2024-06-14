@@ -119,7 +119,7 @@ pub(crate) fn get_default_values(
     };
 
     let punctuated: Punctuated<FieldAssign, Token![,]> = handle_error!(
-        list.parse_args_with(Punctuated::parse_terminated),
+        list.parse_args_with(Punctuated::parse_separated_nonempty),
         error_tokens
     )?;
 
