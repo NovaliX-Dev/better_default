@@ -36,7 +36,7 @@ fn get_field_default_values(
 
         let ty = &field.ty;
 
-        let default_tokens = attrs::find_attribute_and_handle_duplicates(
+        let default_tokens = attrs::find_attribute_unique(
             &field.attrs,
             crate::DEFAULT_IDENT,
             error_tokens,

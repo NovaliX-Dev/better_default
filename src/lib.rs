@@ -33,7 +33,7 @@ macro_rules! handle_error {
 mod attrs;
 mod default;
 mod derive;
-mod field_assign;
+mod top_attribute;
 mod traits;
 
 const DEFAULT_IDENT: &str = "default";

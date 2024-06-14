@@ -1,23 +1,21 @@
-use std::collections::HashMap;
-
 use quote::quote;
 use syn::{
-    punctuated::Punctuated, spanned::Spanned, Attribute, DataEnum, DataStruct, DeriveInput, Expr,
-    Fields, Token,
+    spanned::Spanned, Attribute, DataEnum, DataStruct, DeriveInput,
+    Fields,
 };
 
 use crate::{
     attrs, default,
-    field_assign::{self, FieldAssign},
+    top_attribute,
     Span2, TokenStream2,
 };
 
-fn search_and_mark_attribute_on_variant_fields(
-    variant: &syn::Variant,
+fn search_and_mark_default_attribute_on_fields(
+    fields: &Fields,
     error_tokens: &mut Vec<TokenStream2>,
 ) {
-    for field in &variant.fields {
-        if let Some(attribute) = attrs::find_attribute_and_handle_duplicates(
+    for field in fields {
+        if let Some(attribute) = attrs::find_attribute_unique(
             &field.attrs,
             crate::DEFAULT_IDENT,
             error_tokens,
@@ -29,40 +27,6 @@ fn search_and_mark_attribute_on_variant_fields(
             );
         }
     }
-}
-
-fn parse_top_attribute(
-    attr: &Attribute,
-    field_names: &[String],
-    require_list: bool,
-    error_tokens: &mut Vec<TokenStream2>,
-) -> Option<HashMap<String, Expr>> {
-    let list = if require_list {
-        handle_error!(attr.meta.require_list(), error_tokens)?
-    } else {
-        match &attr.meta {
-            syn::Meta::Path(_) => return None,
-            syn::Meta::List(list) => list,
-            syn::Meta::NameValue(nv) => {
-                let ident = attr.path().get_ident().unwrap();
-                error!(
-                    error_tokens,
-                    nv.span(),
-                    "expected attribute arguments in parentheses (`{ident}(...)`) or single `{ident}`"
-                );
-
-                return None;
-            }
-        }
-    };
-
-    let punctuated: Punctuated<FieldAssign, Token![,]> = handle_error!(
-        list.parse_args_with(Punctuated::parse_terminated),
-        error_tokens
-    )?;
-
-    let hash_map = field_assign::parse_punctuated_unique(punctuated, field_names, error_tokens);
-    Some(hash_map)
 }
 
 fn get_fields_name(fields: &Fields) -> Vec<String> {
@@ -84,7 +48,7 @@ fn derive_struct(
 ) -> TokenStream2 {
     let field_names = get_fields_name(&data.fields);
     let top_attribute =
-        top_attribute.and_then(|attr| parse_top_attribute(attr, &field_names, true, error_tokens));
+        top_attribute.and_then(|attr| top_attribute::get_default_values(attr, &field_names, true, error_tokens));
 
     let body_tokens = default::derive_body(top_attribute.as_ref(), &data.fields, error_tokens);
 
@@ -106,14 +70,14 @@ fn default_enum(
 
     let mut default_variant = None;
     for variant in &data.variants {
-        let attr = match attrs::find_attribute_and_handle_duplicates(
+        let attr = match attrs::find_attribute_unique(
             &variant.attrs,
             crate::DEFAULT_IDENT,
             error_tokens,
         ) {
             Some(value) => value,
             None => {
-                search_and_mark_attribute_on_variant_fields(variant, error_tokens);
+                search_and_mark_default_attribute_on_fields(&variant.fields, error_tokens);
 
                 continue;
             }
@@ -131,7 +95,7 @@ fn default_enum(
         }
 
         let field_names = get_fields_name(&variant.fields);
-        let top_attribute = parse_top_attribute(attr, &field_names, false, error_tokens);
+        let top_attribute = top_attribute::get_default_values(attr, &field_names, false, error_tokens);
 
         let headless_default_tokens =
             default::derive_body(top_attribute.as_ref(), &variant.fields, error_tokens);
@@ -161,7 +125,7 @@ fn default_enum(
 pub fn derive(input: DeriveInput) -> TokenStream2 {
     let mut error_tokens = Vec::new();
 
-    let top_attribute = attrs::find_attribute_and_handle_duplicates(
+    let top_attribute = attrs::find_attribute_unique(
         &input.attrs,
         crate::DEFAULT_IDENT,
         &mut error_tokens,

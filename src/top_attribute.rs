@@ -3,17 +3,17 @@ use std::{
     fmt::Display,
 };
 
-use syn::{parse::Parse, punctuated::Punctuated, Expr, Ident, LitInt, Token};
+use syn::{parse::Parse, punctuated::Punctuated, spanned::Spanned, Attribute, Expr, Ident, LitInt, Token};
 
 use crate::{Span2, TokenStream2};
 
-pub(crate) enum FieldName {
+enum FieldName {
     Ident(Ident),
     IntLiteral(LitInt),
 }
 
 impl FieldName {
-    pub(crate) fn span(&self) -> Span2 {
+    fn span(&self) -> Span2 {
         match self {
             FieldName::Ident(ident) => ident.span(),
             FieldName::IntLiteral(int_literal) => int_literal.span(),
@@ -42,10 +42,10 @@ impl Parse for FieldName {
     }
 }
 
-pub(crate) struct FieldAssign {
-    pub(crate) ident: FieldName,
+struct FieldAssign {
+    ident: FieldName,
     _colon: Token![:],
-    pub(crate) value: Expr,
+    value: Expr,
 }
 
 impl Parse for FieldAssign {
@@ -58,7 +58,7 @@ impl Parse for FieldAssign {
     }
 }
 
-pub(crate) fn parse_punctuated_unique(
+fn parse_punctuated_unique(
     punctuated: Punctuated<FieldAssign, syn::token::Comma>,
     field_names: &[String],
     error_tokens: &mut Vec<TokenStream2>,
@@ -91,4 +91,38 @@ pub(crate) fn parse_punctuated_unique(
 
     hash_map.shrink_to_fit();
     hash_map
+}
+
+pub(crate) fn get_default_values(
+    attr: &Attribute,
+    field_names: &[String],
+    require_list: bool,
+    error_tokens: &mut Vec<TokenStream2>,
+) -> Option<HashMap<String, Expr>> {
+    let list = if require_list {
+        handle_error!(attr.meta.require_list(), error_tokens)?
+    } else {
+        match &attr.meta {
+            syn::Meta::Path(_) => return None,
+            syn::Meta::List(list) => list,
+            syn::Meta::NameValue(nv) => {
+                let ident = attr.path().get_ident().unwrap();
+                error!(
+                    error_tokens,
+                    nv.span(),
+                    "expected attribute arguments in parentheses (`{ident}(...)`) or single `{ident}`"
+                );
+
+                return None;
+            }
+        }
+    };
+
+    let punctuated: Punctuated<FieldAssign, Token![,]> = handle_error!(
+        list.parse_args_with(Punctuated::parse_terminated),
+        error_tokens
+    )?;
+
+    let hash_map = parse_punctuated_unique(punctuated, field_names, error_tokens);
+    Some(hash_map)
 }
