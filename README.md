@@ -104,7 +104,7 @@ use better_default::Default;
 #[derive(Default, Debug)]
 enum Enum {
     // mark the variant as default, and also specifies the default values :
-    //      - the default value of the first field (which is at index 0) is set to 1
+    //      - the default value of the first field (which is at index 0) is set to 2
     //      - the second field (which is at index 1) will have it's default value set to "Hello world!"
     #[default(0: 2, 1: "Hello world!".to_string())]
     Variant1(u32, String),
@@ -138,41 +138,12 @@ fn main() {
 }
 ```
 
+One last note : **these two approaches can be combined,
+which means you can have a top attribute containing some
+default values while some of the fields have their
+own attribute.**
+
 ## Examples
-
-### Mark enum variant with fields as default
-
-```rust
-use better_default::Default;
-
-#[derive(Default, Debug)]
-enum Enum {
-    #[default]
-    Variant1 {
-        first: u32,
-
-        second: String,
-    },
-
-    Variant2,
-
-    Variant3,
-}
-
-#[derive(Default, Debug)]
-enum Enum2 {
-    #[default]
-    Variant1(u32, String),
-
-    Variant2,
-
-    Variant3,
-}
-```
-
-### Customize the default values of the fields
-
-There are two ways of doing this.
 
 1) **The per-field way : Usage of per-field attributes**
 
