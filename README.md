@@ -13,9 +13,7 @@ See all those features in actions in the `Examples` chapter.
 
 ## How to use
 
-### 0. Mark the enum variant as default
-
-**Before doing anything here**, if you want to override the fields of an enum variant, **you should mark it as default first**
+> **Before doing anything here**, if you want to override the fields of an enum variant, **you should mark it as default first**
 
 ```rust, ignore
 use better_default::Default;
