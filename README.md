@@ -334,6 +334,14 @@ fn main() {
 }
 ```
 
+## Contributing
+
+You can contribute to the project by making a pull request.
+
+Here are the tools i use for this library :
+
+- [rustdoc-include](https://github.com/frozenlib/rustdoc-include), which allows me to import the readme directly into the `lib.rs` without copying. Use the `build_crate_doc` script in the `scripts` folder to update them.
+
 ## License
 
 Licensed under Apache 2.0.
