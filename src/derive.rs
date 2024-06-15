@@ -55,7 +55,7 @@ fn derive_struct(
     quote! { Self #body_tokens }
 }
 
-fn default_enum(
+fn derive_enum(
     top_attribute: Option<&Attribute>,
     data: &DataEnum,
     error_tokens: &mut Vec<TokenStream2>,
@@ -133,7 +133,7 @@ pub fn derive(input: DeriveInput) -> TokenStream2 {
 
     let tokens = match &input.data {
         syn::Data::Struct(data) => derive_struct(top_attribute, data, &mut error_tokens),
-        syn::Data::Enum(data) => default_enum(top_attribute, data, &mut error_tokens),
+        syn::Data::Enum(data) => derive_enum(top_attribute, data, &mut error_tokens),
         syn::Data::Union(data) => {
             return error!(
                 data.union_token.span(),
