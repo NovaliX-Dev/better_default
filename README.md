@@ -39,7 +39,7 @@ The per-field attributes are simply attributes you put atop of the fields for wh
 The syntax is the following :
 ```rust, ignore
 #[default( <expression> )]
-<fields>
+<field_ident>: <field_type>
 ```
 
 You can put anything you want in the `expression` bloc, **as long as it can be correctly parse by [syn::Expr](https://docs.rs/syn/latest/syn/enum.Expr.html).**
@@ -340,7 +340,7 @@ You can contribute to the project by making a pull request.
 
 Here are the tools i use for this library :
 
-- [rustdoc-include](https://github.com/frozenlib/rustdoc-include), which allows me to import the readme directly into the `lib.rs` without copying. Use the `build_crate_doc` script in the `scripts` folder to update them.
+- [rustdoc-include](https://github.com/frozenlib/rustdoc-include), which allows me to import the readme directly into the `lib.rs` without copying. That's why you can see those `// #[include_doc(...)]` in `lib.rs`. Use the `build_crate_doc` script in the `scripts` folder to update them.
 
 ## License
 
