@@ -79,16 +79,14 @@
 //!
 //! The syntax of the top attributes is the following :
 //! ```rust, ignore
+//! use better_default::Default;
+//!
 //! #[derive(Default)]
 //! #[default((<field_id>: <expression>),*)]
 //! struct Struct {
 //!     ...
 //! } // the struct can have unnamed fields
-//! ```
 //!
-//! <br>
-//!
-//! ```rust, ignore
 //! #[derive(Default)]
 //! enum Enum {
 //!     #[default((<field_id>: <expression>),*)]
@@ -337,6 +335,14 @@
 //! }
 //! ```
 //!
+//! ## Contributing
+//!
+//! You can contribute to the project by making a pull request.
+//!
+//! Here are the tools i use for this library :
+//!
+//! - [rustdoc-include](https://github.com/frozenlib/rustdoc-include), which allows me to import the readme directly into the `lib.rs` without copying. Use the `build_crate_doc` script in the `scripts` folder to update them.
+//!
 //! ## License
 //!
 //! Licensed under Apache 2.0.
@@ -454,16 +460,14 @@ const DEFAULT_IDENT: &str = "default";
 ///
 /// The syntax of the top attributes is the following :
 /// ```rust, ignore
+/// use better_default::Default;
+///
 /// #[derive(Default)]
 /// #[default((<field_id>: <expression>),*)]
 /// struct Struct {
 ///     ...
 /// } // the struct can have unnamed fields
-/// ```
 ///
-/// <br>
-///
-/// ```rust, ignore
 /// #[derive(Default)]
 /// enum Enum {
 ///     #[default((<field_id>: <expression>),*)]
@@ -711,7 +715,7 @@ const DEFAULT_IDENT: &str = "default";
 ///     println!("{:?}", default) // should print "Struct { field1: 1, field2: "Hello world!" }"
 /// }
 /// ```
-// #[include_doc("../README.md", end("## License"))]
+// #[include_doc("../README.md", end("## Contributing"))]
 #[proc_macro_derive(Default, attributes(default))]
 pub fn better_default(input: TokenStream) -> TokenStream {
     let input = syn::parse_macro_input!(input as DeriveInput);
