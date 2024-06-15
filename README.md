@@ -78,12 +78,14 @@ Instead of placing an attribute on all the fields of a struct / enum variant, yo
 
 The syntax of the top attributes is the following :
 ```rust, ignore
+use better_default::Default;
+
 #[derive(Default)]
 #[default((<field_id>: <expression>),*)]
-struct Struct { ... } // the struct can have unnamed fields
-```
+struct Struct { 
+    ...
+} // the struct can have unnamed fields
 
-```rust, ignore
 #[derive(Default)]
 enum Enum {
     #[default((<field_id>: <expression>),*)]
