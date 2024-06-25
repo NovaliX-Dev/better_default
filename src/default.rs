@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use quote::{quote, ToTokens};
 use syn::{spanned::Spanned, Expr, Fields, Ident, Token};
 
-use crate::{attrs, traits::JoinTokens, Span2, TokenStream2};
+use crate::{attrs, constants::{self, DefaultTraitPath}, traits::JoinTokens, Span2, TokenStream2};
 
 pub(crate) struct DefaultValue {
     ident: Option<Ident>,
@@ -38,7 +38,7 @@ fn get_field_default_values(
 
         let default_tokens = attrs::find_attribute_unique(
             &field.attrs,
-            crate::DEFAULT_IDENT,
+            constants::DEFAULT_IDENT,
             error_tokens,
         )
             .and_then(|attr| handle_error!(attr.meta.require_list(), error_tokens));
@@ -62,7 +62,7 @@ fn get_field_default_values(
         let default_tokens = default_tokens
             .map(|expr| expr.to_token_stream())
             .or(top_default_tokens)
-            .unwrap_or(quote! { <#ty as Default>::default() });
+            .unwrap_or(quote! { <#ty as #DefaultTraitPath>::default() });
 
         let default_value = DefaultValue {
             ident,

@@ -7,7 +7,7 @@ use syn::{
 use crate::{
     attrs, default,
     top_attribute,
-    Span2, TokenStream2,
+    Span2, TokenStream2, constants::{self, DefaultTraitPath}
 };
 
 fn search_and_mark_default_attribute_on_fields(
@@ -17,7 +17,7 @@ fn search_and_mark_default_attribute_on_fields(
     for field in fields {
         if let Some(attribute) = attrs::find_attribute_unique(
             &field.attrs,
-            crate::DEFAULT_IDENT,
+            constants::DEFAULT_IDENT,
             error_tokens,
         ) {
             error!(
@@ -72,7 +72,7 @@ fn derive_enum(
     for variant in &data.variants {
         let attr = match attrs::find_attribute_unique(
             &variant.attrs,
-            crate::DEFAULT_IDENT,
+            constants::DEFAULT_IDENT,
             error_tokens,
         ) {
             Some(value) => value,
@@ -102,7 +102,7 @@ fn derive_enum(
         let ident = &variant.ident;
         // FIXME: for some reason the "value holding a reference to a value owned by the current function"
         // error has the Span::call_site() span, and idk why.
-        let default_tokens = quote! { Self::#ident #headless_default_tokens };
+        let default_tokens: TokenStream2 = quote! { Self::#ident #headless_default_tokens };
 
         let ident = variant.ident.to_owned();
         default_variant = Some((ident, default_tokens));
@@ -127,7 +127,7 @@ pub fn derive(input: DeriveInput) -> TokenStream2 {
 
     let top_attribute = attrs::find_attribute_unique(
         &input.attrs,
-        crate::DEFAULT_IDENT,
+        constants::DEFAULT_IDENT,
         &mut error_tokens,
     );
 
@@ -148,7 +148,7 @@ pub fn derive(input: DeriveInput) -> TokenStream2 {
     let error_tokens: TokenStream2 = error_tokens.into_iter().collect();
 
     quote! {
-        impl #impl_generics std::default::Default for #ident #type_generics #where_clause {
+        impl #impl_generics #DefaultTraitPath for #ident #type_generics #where_clause {
             fn default() -> Self {
                 #tokens
             }

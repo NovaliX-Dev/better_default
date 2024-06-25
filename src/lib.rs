@@ -387,9 +387,7 @@ mod default;
 mod derive;
 mod top_attribute;
 mod traits;
-
-const DEFAULT_IDENT: &str = "default";
-
+mod constants;
 
 /// The main derive of this crate.
 // #[include_doc("../README.md", start("## How to use"))]
