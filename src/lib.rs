@@ -718,5 +718,5 @@ mod constants;
 pub fn better_default(input: TokenStream) -> TokenStream {
     let input = syn::parse_macro_input!(input as DeriveInput);
 
-    derive::derive(input).into()
+    derive::derive(&input).into()
 }

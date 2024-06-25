@@ -70,17 +70,14 @@ fn derive_enum(
 
     let mut default_variant = None;
     for variant in &data.variants {
-        let attr = match attrs::find_attribute_unique(
+        let Some(attr) = attrs::find_attribute_unique(
             &variant.attrs,
             constants::DEFAULT_IDENT,
             error_tokens,
-        ) {
-            Some(value) => value,
-            None => {
-                search_and_mark_default_attribute_on_fields(&variant.fields, error_tokens);
+        ) else {
+            search_and_mark_default_attribute_on_fields(&variant.fields, error_tokens);
 
-                continue;
-            }
+            continue;
         };
 
         if let Some((ident, _)) = default_variant.as_ref() {
@@ -99,30 +96,28 @@ fn derive_enum(
 
         let headless_default_tokens =
             default::derive_body(top_attribute.as_ref(), &variant.fields, error_tokens);
-        let ident = &variant.ident;
+        let ident = variant.ident.clone();
         // FIXME: for some reason the "value holding a reference to a value owned by the current function"
         // error has the Span::call_site() span, and idk why.
         let default_tokens: TokenStream2 = quote! { Self::#ident #headless_default_tokens };
 
-        let ident = variant.ident.to_owned();
         default_variant = Some((ident, default_tokens));
     }
 
-    match default_variant {
-        Some((_, tokens)) => tokens,
-        None => {
-            error!(
-                error_tokens,
-                Span2::call_site(),
-                "the default variant has not been set."
-            );
+    if let Some((_, tokens)) = default_variant {
+        tokens
+    } else {
+        error!(
+            error_tokens,
+            Span2::call_site(),
+            "the default variant has not been set."
+        );
 
-            quote! { panic!() }
-        }
+        quote! { panic!() }
     }
 }
 
-pub fn derive(input: DeriveInput) -> TokenStream2 {
+pub fn derive(input: &DeriveInput) -> TokenStream2 {
     let mut error_tokens = Vec::new();
 
     let top_attribute = attrs::find_attribute_unique(

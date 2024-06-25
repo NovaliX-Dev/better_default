@@ -15,8 +15,8 @@ enum FieldName {
 impl FieldName {
     fn span(&self) -> Span2 {
         match self {
-            FieldName::Ident(ident) => ident.span(),
-            FieldName::IntLiteral(int_literal) => int_literal.span(),
+            Self::Ident(ident) => ident.span(),
+            Self::IntLiteral(int_literal) => int_literal.span(),
         }
     }
 }
@@ -24,8 +24,8 @@ impl FieldName {
 impl Display for FieldName {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let str = match self {
-            FieldName::Ident(ident) => ident.to_string(),
-            FieldName::IntLiteral(int_literal) => int_literal.to_string(),
+            Self::Ident(ident) => ident.to_string(),
+            Self::IntLiteral(int_literal) => int_literal.to_string(),
         };
         f.write_str(str.as_str())
     }
@@ -93,7 +93,7 @@ fn parse_punctuated_unique(
     hash_map
 }
 
-pub(crate) fn get_default_values(
+pub fn get_default_values(
     attr: &Attribute,
     field_names: &[String],
     require_list: bool,
