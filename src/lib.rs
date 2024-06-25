@@ -3,6 +3,11 @@
 //!
 //! *The std Default derive with more customization available and some upgrades.*
 //!
+//! ![Crates.io License](https://img.shields.io/crates/l/better_default)
+//! [<img alt="docs.rs" src="https://img.shields.io/docsrs/better_default">
+//! ](https://docs.rs/better_default/)
+//!
+//!
 //! This crate provide a single derive trait called `Default`. This derive act as the std `Default` derive, but allows to modify the default values of each fields. It also allows to mark enum variants with fields as default.
 //!
 //! ## Features
