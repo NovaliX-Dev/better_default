@@ -23,6 +23,6 @@ for (name, command) in CHECK_QUEUE:
         exit(2)
 
 for command in COMMAND_QUEUE:
-    print(command)
+    print(f"=====> Executing {command}")
     if execute(command) != 0:
         exit(1)
