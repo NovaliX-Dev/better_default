@@ -7,13 +7,15 @@ CHECK_QUEUE = [
 COMMAND_QUEUE = [
     "cargo test",
     "rustdoc-include --root ./",
-    "git commit -a --message \"Pre-publish commit\""
+    "git commit -a --message \"Pre-publish commit\"",
     "cargo publish --dry-run"
 ]
 
 def execute(command: str) -> int:
     if os.name == "nt":
         return os.system(command)
+    else:
+        raise Exception("OS Not supported")
 
 for (name, command) in CHECK_QUEUE:
     if execute(command) != 0:
@@ -21,5 +23,6 @@ for (name, command) in CHECK_QUEUE:
         exit(2)
 
 for command in COMMAND_QUEUE:
+    print(command)
     if execute(command) != 0:
         exit(1)
