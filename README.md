@@ -13,6 +13,7 @@ This crate provide a single derive trait called `Default`. This derive act as th
  - Does everything the std `Default` derive trait does
  - Support marking enum variant with fields as default
  - Support overriding the default value of each fields
+ - Support no-std, which means it will output code which is no-std. **Note that this library by itself needs the std library**.
 
 See all those features in actions in the `Examples` chapter.
 
