@@ -48,7 +48,7 @@ def main() -> None:
     try_execute("rustdoc-include --root ./")
     if execute("git diff-index --quiet HEAD") != 0:
         try_execute("git commit -a --message \"Pre-publish commit\"")
-    try_execute("cargo publish --dry-run")
+    try_execute("cargo publish")
 
 
 try:
