@@ -43,6 +43,8 @@ def test(name: str, command: str) -> None:
 
 def main() -> None:
     test("No modified files since last commit", "git diff-index --quiet HEAD")
+
+    # FIXME : this script doesn't check examples on README.md
     test("Cargo test", "cargo test")
 
     try_execute("rustdoc-include --root ./")
