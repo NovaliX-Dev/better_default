@@ -98,7 +98,7 @@ fn derive_enum(
             default::derive_body(top_attribute.as_ref(), &variant.fields, error_tokens);
         let ident = variant.ident.clone();
         // FIXME: for some reason the "value holding a reference to a value owned by the current function"
-        // error has the Span::call_site() span, and idk why.
+        //  error has the Span::call_site() span, and idk why.
         let default_tokens: TokenStream2 = quote! { Self::#ident #headless_default_tokens };
 
         default_variant = Some((ident, default_tokens));
